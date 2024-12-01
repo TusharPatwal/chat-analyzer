@@ -36,7 +36,9 @@ def preprocess(data):
     # extracting date & time from date column
     df['year'] = df['date'].dt.year
     df['month'] = df['date'].dt.month_name()
+    df['month_num'] = df['date'].dt.month
     df['day'] = df['date'].dt.day
+    df['only_date'] = df['date'].dt.date
     df['hour'] = df['date'].dt.hour
     df['minute'] = df['date'].dt.minute
     
