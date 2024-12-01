@@ -2,6 +2,7 @@ from collections import Counter
 import pandas as pd
 from urlextract import URLExtract
 from wordcloud import WordCloud
+import emoji
 import plotly.express as px
 extract = URLExtract()
 
@@ -87,3 +88,40 @@ def most_common_words(selected_user, df):
     return_df = pd.DataFrame(Counter(words).most_common(20), columns=['word', 'count'])
     return px.bar(data_frame=return_df, x=return_df['word'], y=return_df['count'])
     
+def emoji_helper(selected_user, df):
+    if selected_user != 'Overall':
+        df = df[df['users'] == selected_user]
+    
+    emojis = list()
+    for message in df['message']:
+        emojis.extend([c for c in message if emoji.is_emoji(c)])
+        
+    emoji_df = pd.DataFrame(Counter(emojis).most_common(len(Counter(emojis))), columns=['emoji', 'count'])
+
+    fig = px.pie(data_frame=emoji_df.head(20), names='emoji', values='count')
+
+    return emoji_df, fig
+
+def monthly_timeline(selected_user,df):
+    if selected_user != 'Overall':
+        df = df[df['users'] == selected_user]
+
+    timeline = df.groupby(['year','month_num', 'month']).count()['message'].reset_index()
+    time = list()
+    for i in range(timeline.shape[0]):
+        time.append(timeline['month'][i] + "-" +str(timeline['year'][i]))
+
+    timeline['time'] = time
+    fig = px.line(data_frame=timeline, x='time', y='message')
+    return fig
+
+
+def daily_timeline(selected_user,df):
+
+    if selected_user != 'Overall':
+        df = df[df['user'] == selected_user]
+
+    daily_timeline = df.groupby('only_date').count()['message'].reset_index()
+    fig = px.line(data_frame=daily_timeline, x='only_date', y='message')
+    
+    return fig
