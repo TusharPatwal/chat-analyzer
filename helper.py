@@ -3,6 +3,8 @@ import pandas as pd
 from urlextract import URLExtract
 from wordcloud import WordCloud
 import emoji
+import seaborn as sns
+import matplotlib.pyplot as plt
 import plotly.express as px
 extract = URLExtract()
 
@@ -61,7 +63,7 @@ def create_wordcloud(selected_user, df):
                 y.append(word)
         return " ".join(y)
         
-    wc = WordCloud(width=500, height=500, min_font_size=10,
+    wc = WordCloud(width=700, height=700, min_font_size=10,
                    background_color='white')
     temp['message'] = temp['message'].apply(remove_stop_words)
     df_wc = wc.generate(temp['message'].str.cat(sep=" "))
@@ -98,7 +100,7 @@ def emoji_helper(selected_user, df):
         
     emoji_df = pd.DataFrame(Counter(emojis).most_common(len(Counter(emojis))), columns=['emoji', 'count'])
 
-    fig = px.pie(data_frame=emoji_df.head(20), names='emoji', values='count')
+    fig = px.pie(data_frame=emoji_df.head(15), names='emoji', values='count')
 
     return emoji_df, fig
 
@@ -119,9 +121,39 @@ def monthly_timeline(selected_user,df):
 def daily_timeline(selected_user,df):
 
     if selected_user != 'Overall':
-        df = df[df['user'] == selected_user]
+        df = df[df['users'] == selected_user]
 
     daily_timeline = df.groupby('only_date').count()['message'].reset_index()
     fig = px.line(data_frame=daily_timeline, x='only_date', y='message')
     
+    return fig
+
+
+def week_acticity_map(selected_user,df):
+    if selected_user != 'Overall':
+        df = df[df['users'] == selected_user]
+    
+    busy_day = df['day_name'].value_counts().reset_index()
+    return px.bar(data_frame=busy_day, x='day_name', y='count', color='day_name')
+
+def month_acticity_map(selected_user,df):
+    if selected_user != 'Overall':
+        df = df[df['users'] == selected_user]
+    
+    busy_day = df['month'].value_counts().reset_index()
+    return px.bar(data_frame=busy_day, x='month', y='count', color='month')
+
+
+def activity_heatmap(selected_user,df):
+    if selected_user != 'Overall':
+        df = df[df['users'] == selected_user]
+    
+    new_df = df.pivot_table(index='day_name', columns='period', values='message', aggfunc='count').fillna(0)
+    fig, ax = plt.subplots()
+    ax = sns.heatmap(new_df, cmap='Blues')
+    # fig = px.imshow(new_df,
+    #             labels=dict(x="Day of Week", y="Time of Day", color="Productivity"),
+    #             x=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+    #             y=['Morning', 'Afternoon', 'Evening']
+    #            )
     return fig
