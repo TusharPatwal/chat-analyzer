@@ -52,7 +52,24 @@ if upload_file is not None:
     st.title('Daily Timeline')
     d_timeline = helper.daily_timeline(selected_user, df)
     st.plotly_chart(d_timeline)
+
+    # activity map 
+    st.title('Activity Map')
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.header('Most busy day')
+        busy_day = helper.week_acticity_map(selected_user, df)
+        st.plotly_chart(busy_day)
     
+    with col2:
+        st.header('Most busy month')
+        busy_month = helper.month_acticity_map(selected_user, df)
+        st.plotly_chart(busy_month)
+
+    user_heatmap = helper.activity_heatmap(selected_user, df)
+    
+    st.pyplot(user_heatmap)
 
     # finding the busiest users in the group(group level)
     if selected_user == 'Overall':
@@ -89,6 +106,4 @@ if upload_file is not None:
     with col2:
         st.plotly_chart(fig)
         
-    # monthly timeline
-    st.title("Monthly Timeline")
     
