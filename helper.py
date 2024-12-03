@@ -1,12 +1,11 @@
 from collections import Counter
 import pandas as pd
-from urlextract import URLExtract
 from wordcloud import WordCloud
 import emoji
+import re
 import seaborn as sns
 import matplotlib.pyplot as plt
 import plotly.express as px
-extract = URLExtract()
 
 
 def fetch_stats(selected_user, df):
@@ -26,9 +25,10 @@ def fetch_stats(selected_user, df):
     num_media_msg = df[df['message'].str.contains("<Media omitted>")].shape[0]
 
     # fetch number of links messages
+    url_pattern = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+'
     links = list()
     for message in df['message']:
-        links.extend(extract.find_urls(message))
+        links.extend(re.findall(url_pattern, message))
 
     return num_messages, len(words), num_media_msg, len(links)
 
