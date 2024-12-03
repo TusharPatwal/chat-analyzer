@@ -69,7 +69,9 @@ if upload_file is not None:
 
     user_heatmap = helper.activity_heatmap(selected_user, df)
     
+    st.title('Weekly Activity Map')
     st.pyplot(user_heatmap)
+    # st.plotly_chart(user_heatmap)
 
     # finding the busiest users in the group(group level)
     if selected_user == 'Overall':
