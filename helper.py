@@ -150,10 +150,6 @@ def activity_heatmap(selected_user,df):
     
     new_df = df.pivot_table(index='day_name', columns='period', values='message', aggfunc='count').fillna(0)
     fig, ax = plt.subplots()
-    ax = sns.heatmap(new_df, cmap='Blues')
-    # fig = px.imshow(new_df,
-    #             labels=dict(x="Day of Week", y="Time of Day", color="Productivity"),
-    #             x=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-    #             y=['Morning', 'Afternoon', 'Evening']
-    #            )
+    ax = sns.heatmap(new_df, cmap='coolwarm')
+    # fig = px.imshow(new_df)
     return fig
